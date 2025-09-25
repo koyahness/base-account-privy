@@ -1,0 +1,80 @@
+# Configure wallet options
+
+To customize the external wallet options for your app, pass in a **`WalletListEntry`** array to the **`config.appearance.walletList`** property. When users login with, connect, or link an external wallet in your app, the possible options (e.g. MetaMask, Rainbow, WalletConnect, Base Account) will be presented to users in the order you configure them in this array.
+
+```tsx
+<PrivyProvider
+  appId="your-privy-app-id"
+  config={{
+    appearance: {
+      // Defaults ['detected_wallets', 'metamask', 'coinbase_wallet', 'rainbow', 'wallet_connect']
+      walletList: ['metamask', 'rainbow', 'wallet_connect'],
+      ...insertTheRestOfYourAppearanceConfig
+    },
+    ...insertTheRestOfYourPrivyProviderConfig
+  }}
+>
+  {children}
+</PrivyProvider>
+```
+
+<Info>
+  When your React web app is accessed through the in-app browser of a mobile wallet (e.g., Rainbow,
+  Phantom, etc.) and that wallet is selected as a login option, the Privy SDK will automatically
+  detect the wallet object and prompt the user to connect in app. However, if your app is accessed
+  via a standard browser (e.g., Chrome, Safari, etc.), Privy will default to using WalletConnect for
+  mobile wallet connection.
+</Info>
+
+You can also configure which wallet options to show at runtime, by passing in `walletList` to the `connectWallet` method:
+
+```tsx
+import {usePrivy} from '@privy-io/react-auth';
+
+const {connectWallet} = usePrivy();
+
+<button onClick={() => connectWallet({walletList: ['rainbow', 'base_account']})}>
+  Login with email and sms only
+</button>;
+```
+
+The possible wallets to include in the array are:
+
+* `detected_ethereum_wallets`
+* `detected_solana_wallets`
+* `metamask`
+* `coinbase_wallet`
+* `base_account`
+* `rainbow`
+* `phantom`
+* `zerion`
+* `cryptocom`
+* `uniswap`
+* `okx_wallet`
+* `universal_profile`
+* `rabby_wallet`
+* `bybit_wallet`
+* `ronin_wallet`
+* `haha_wallet`
+* `safe`
+* `solflare`
+* `backpack`
+* `binance`
+* `bitkeep` (BitGet)
+* `wallet_connect` (include this to capture the long-tail of wallets that support WalletConnect in your app)
+* `wallet_connect_qr` (include this to just show a QR code to connect any wallet via the WalletConnect protocol)
+
+The `detected_*_wallets` option includes all wallets that Privy detects which are not explicitly included elsewhere in the walletList array. As an example, if your user has the Zerion browser extension installed, it will appear under `detected_*_wallets` – unless you include `zerion` elsewhere in the `walletList` array, in which case it will appear in the placement of `zerion`.
+
+<Info>
+  Privy detects wallets via [EIP6963 injection](https://eips.ethereum.org/EIPS/eip-6963),
+  `window.ethereum` injection, or a mobile wallet's in-app browser.
+</Info>
+
+### Migrating from Coinbase Smart Wallet to Base Account
+
+Coinbase Smart Wallet is now Base Account. If you support Coinbase Smart Wallet, you should add the `base_account` option to your walletList while keeping `coinbase_wallet` in the list for now.
+
+At a later date, it will be necessary to move away from `coinbase_wallet` and only support `base_account`.
+
+For more details, see the [Base Account migration guide](https://docs.base.org/base-account/guides/migration-guide).
