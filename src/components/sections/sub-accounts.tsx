@@ -113,7 +113,7 @@ const SubAccounts = () => {
       disabled: !baseAccount || isLoading,
     },
     {
-      name: "Create New Sub Account",
+      name: "Create Sub Account",
       function: handleAddSubAccount,
       disabled: !baseAccount || isLoading,
     },
