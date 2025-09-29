@@ -65,6 +65,16 @@ body {
   .border-primary {
     @apply border-[#5B4FFF];
   }
+  
+  .text-base-blue {
+    @apply text-[#0000FF];
+  }
+  .bg-base-blue {
+    @apply bg-[#0000FF];
+  }
+  .border-base-blue {
+    @apply border-[#0000FF];
+  }
 
   .loader-overlay {
     @apply absolute left-0 top-0 z-10 flex h-full w-full items-center justify-center bg-white/30;
