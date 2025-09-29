@@ -1,6 +1,6 @@
-# Base Account + Privy Integration Demo
+# Build on Base with Privy
 
-A comprehensive Next.js application demonstrating Base Account integration with Privy for authentication, sub-accounts management, and wallet operations.
+A Next.js starter template for building on Base with Privy's authentication and wallet infrastructure. Features Base Account integration, smart wallet management, and seamless onchain experiences.
 
 ## 🚀 Features
 
