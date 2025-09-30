@@ -12,6 +12,7 @@ import LinkAccounts from "@/components/sections/link-accounts";
 import UnlinkAccounts from "@/components/sections/unlink-accounts";
 import WalletActions from "@/components/sections/wallet-actions";
 import SubAccounts from "@/components/sections/sub-accounts";
+import SpendPermissions from "@/components/sections/spend-permissions";
 import Authentication from "@/components/sections/authentication";
 import MFA from "@/components/sections/mfa";
 
@@ -34,6 +35,7 @@ function Home() {
             <div>
               <Authentication />
               <SubAccounts />
+              <SpendPermissions />
               <WalletActions />
               <LinkAccounts />
               <UnlinkAccounts />
@@ -53,13 +55,13 @@ function Home() {
           />
           <div className="z-10 flex flex-col items-center justify-center w-full h-full">
           <div className="flex h-10 items-center justify-center rounded-[20px] border border-white px-6 text-lg text-white font-abc-favorit">
-            Next.js Demo
+            Base × Privy Demo
           </div>
         <div className="text-center mt-4 text-white text-7xl font-medium font-abc-favorit leading-[81.60px]">
-          Starter repo
+          Build on Base
         </div>
             <div className="text-center text-white text-xl font-normal leading-loose mt-8">
-              Get started developing with Privy using our Next.js starter repo
+              Get started building on Base with Privy&apos;s authentication and native Base Account support
             </div>
             <button
               className="bg-white text-brand-off-black mt-15 w-full max-w-md rounded-full px-4 py-2 hover:bg-gray-100 lg:px-8 lg:py-4 lg:text-xl"
