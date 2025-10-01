@@ -58,7 +58,6 @@ const Authentication = () => {
           };
         }>;
       };
-      console.log(response);
       const { address } = response.accounts[0];
       const { message, signature } =
         response.accounts[0].capabilities.signInWithEthereum;
