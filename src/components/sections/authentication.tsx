@@ -1,200 +1,148 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { useWallets } from "@privy-io/react-auth";
+import { useState } from "react";
+import { useBaseAccountSdk } from "@privy-io/react-auth";
+import { SignInWithBaseButton } from "@base-org/account-ui/react";
 import Section from "../reusables/section";
 import { showSuccessToast, showErrorToast } from "@/components/ui/custom-toast";
 
-type AuthResult = {
-  address: string;
-  message: string;
-  signature: string;
-};
-
 const Authentication = () => {
-  const { wallets } = useWallets();
-  const [authResult, setAuthResult] = useState<AuthResult | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const { baseAccountSdk } = useBaseAccountSdk();
+  const [loading, setLoading] = useState(false);
+  const [verificationResult, setVerificationResult] = useState<any>(null);
 
-  // Find the Base Account wallet
-  const baseAccount = useMemo(() => {
-    return wallets.find((wallet) => wallet.walletClientType === 'base_account');
-  }, [wallets]);
-
-  const generateNonce = () => {
-    return window.crypto.randomUUID().replace(/-/g, '');
-  };
+  const provider = baseAccountSdk?.getProvider();
 
   const handleSignInWithBase = async () => {
-    if (!baseAccount) {
-      showErrorToast("No Base Account found. Please connect your Base Account first.");
+    if (!provider) {
+      showErrorToast("Base Account SDK not available");
       return;
     }
 
-    setIsLoading(true);
     try {
-      const provider = await baseAccount.getEthereumProvider();
+      setLoading(true);
+      setVerificationResult(null);
 
-      // 1. Generate a fresh nonce
-      const nonce = generateNonce();
+      // Get a fresh nonce
+      const nonceResponse = await fetch("/api/auth/nonce");
+      if (!nonceResponse.ok) {
+        throw new Error("Failed to get nonce");
+      }
+      const { nonce } = await nonceResponse.json();
 
-      // 2. Switch to Base Mainnet (0x2105 = 8453)
+      // Switch to Base Chain
       await provider.request({
         method: "wallet_switchEthereumChain",
-        params: [{ chainId: '0x2105' }],
+        params: [{ chainId: "0x2105" }],
       });
 
-      // 3. Connect and authenticate with Sign in with Ethereum
-      const response = await provider.request({
-        method: 'wallet_connect',
-        params: [{
-          version: '1',
+      // Connect and authenticate with SIWE
+      const response = (await provider.request({
+        method: "wallet_connect",
+        params: [
+          {
+            version: "1",
+            capabilities: {
+              signInWithEthereum: {
+                nonce,
+                chainId: "0x2105",
+              },
+            },
+          },
+        ],
+      })) as {
+        accounts: Array<{
+          address: string;
           capabilities: {
-            signInWithEthereum: { 
-              nonce, 
-              chainId: '0x2105' // Base Mainnet - 8453
-            }
-          }
-        }]
+            signInWithEthereum: { message: string; signature: string };
+          };
+        }>;
+      };
+      console.log(response);
+      const { address } = response.accounts[0];
+      const { message, signature } =
+        response.accounts[0].capabilities.signInWithEthereum;
+
+      // Verify with backend
+      const verifyResponse = await fetch("/api/auth/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ address, message, signature }),
       });
 
-      const { accounts } = response as { accounts: any[] };
-      const { address } = accounts[0];
-      const { message, signature } = accounts[0].capabilities.signInWithEthereum;
+      const result = await verifyResponse.json();
 
-      const authData = { address, message, signature };
-      setAuthResult(authData);
+      if (!verifyResponse.ok) {
+        throw new Error(result.error || "Verification failed");
+      }
 
-      showSuccessToast("Successfully authenticated with Base Account!");
-      
-      // Here you would normally send this to your backend for verification
-      console.log("Authentication data:", authData);
-
-    } catch (error) {
-      console.error("Error authenticating with Base:", error);
-      const message = error?.toString?.() ?? "Failed to authenticate with Base";
-      showErrorToast(message);
+      setVerificationResult(result);
+      showSuccessToast("Successfully signed in with Base and verified!");
+    } catch (error: any) {
+      console.error("Sign in error:", error);
+      showErrorToast(error.message || "Sign in failed");
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
-  };
-
-  const handleClearAuth = () => {
-    setAuthResult(null);
-    showSuccessToast("Authentication data cleared");
   };
 
   const availableActions = [
     {
-      name: "Sign in with Base",
+      name: "Sign In With Base",
       function: handleSignInWithBase,
-      disabled: !baseAccount || isLoading,
-    },
-    {
-      name: "Clear Authentication",
-      function: handleClearAuth,
-      disabled: !authResult || isLoading,
+      disabled: loading || !provider,
     },
   ];
 
   return (
-    <Section
-      name="Authentication"
-      description={
-        "Authenticate users with Base Account using wallet signatures instead of passwords. Follows the Sign in with Ethereum (SIWE) standard."
-      }
-      filepath="src/components/sections/authentication"
-      actions={availableActions}
-    >
-      <div className="mb-4">
-        <div className="mb-4">
-          <p className="text-sm text-gray-600 mb-2">
-            Base Account Status: {baseAccount ? `Connected (${baseAccount.address})` : "Not connected"}
-          </p>
-          {baseAccount && (
-            <p className="text-xs text-gray-500 mb-4">
-              Network: Base Mainnet (Chain ID: 8453)
-            </p>
-          )}
-        </div>
-
-        {/* Custom Sign in with Base Button */}
-        {!authResult && (
-          <div className="mb-4">
-            <button
+    <>
+      <Section
+        name="Authentication"
+        description="Sign in with Base Account and verify the signature on the backend."
+        filepath="src/components/sections/authentication"
+        actions={availableActions}
+      >
+        <div className="space-y-4">
+          {/* Sign In With Base Button */}
+          <div className="w-fit">
+            <SignInWithBaseButton
+              colorScheme="dark"
               onClick={handleSignInWithBase}
-              disabled={!baseAccount || isLoading}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                padding: '12px 16px',
-                backgroundColor: '#ffffff',
-                border: '1px solid #E2E3F0',
-                borderRadius: '8px',
-                cursor: baseAccount && !isLoading ? 'pointer' : 'not-allowed',
-                fontFamily: 'system-ui, -apple-system, sans-serif',
-                fontSize: '14px',
-                fontWeight: '500',
-                color: '#000000',
-                minWidth: '180px',
-                height: '44px',
-                opacity: baseAccount && !isLoading ? 1 : 0.5
-              }}
-            >
-              <div style={{
-                width: '16px',
-                height: '16px',
-                backgroundColor: '#0000FF',
-                borderRadius: '2px',
-                flexShrink: 0
-              }} />
-              <span>{isLoading ? 'Signing in...' : 'Sign in with Base'}</span>
-            </button>
+            />
           </div>
-        )}
-
-        {authResult && (
-          <div className="mb-4">
-            <h4 className="text-sm font-medium mb-2 text-green-600">✅ Authentication Successful</h4>
-            <div className="space-y-3">
-              <div className="p-3 border border-green-200 rounded-md bg-green-50">
-                <div className="text-xs text-gray-700 space-y-2">
-                  <div>
-                    <p><strong>Address:</strong></p>
-                    <p className="font-mono break-all text-xs">{authResult.address}</p>
-                  </div>
-                  <div>
-                    <p><strong>Message:</strong></p>
-                    <p className="font-mono break-all text-xs bg-gray-100 p-2 rounded">
-                      {authResult.message}
-                    </p>
-                  </div>
-                  <div>
-                    <p><strong>Signature:</strong></p>
-                    <p className="font-mono break-all text-xs bg-gray-100 p-2 rounded">
-                      {authResult.signature}
-                    </p>
-                  </div>
-                </div>
+          <div className="w-fit">
+            <SignInWithBaseButton
+              colorScheme="light"
+              onClick={handleSignInWithBase}
+            />
+          </div>
+        </div>
+      </Section>
+      <div>
+        {verificationResult && (
+          <div className="bg-green-50 p-4 rounded-lg">
+            <h4 className="font-semibold mb-3 text-green-900">
+              ✅ Backend Verified!
+            </h4>
+            <div className="text-sm text-green-800 space-y-1">
+              <div>
+                <strong>Address:</strong> {verificationResult.address}
               </div>
-              <div className="text-xs text-gray-600 bg-blue-50 p-3 rounded-md">
-                <p><strong>Next Steps:</strong></p>
-                <p>Send this authentication data to your backend server for verification using viem's <code>verifyMessage</code> function.</p>
+              <div>
+                <strong>Verified at:</strong>{" "}
+                {new Date(verificationResult.timestamp).toLocaleString()}
               </div>
             </div>
           </div>
         )}
 
-        {isLoading && (
-          <div className="flex items-center justify-center py-4">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-            <span className="ml-2 text-sm text-gray-600">Authenticating...</span>
+        {loading && (
+          <div className="text-center text-blue-600">
+            Signing in with Base...
           </div>
         )}
       </div>
-    </Section>
+    </>
   );
 };
 
