@@ -30,7 +30,7 @@ The application is configured to prioritize Base Account as the primary wallet o
 >
 ```
 
-This configuration ensures that Base Account appears first in the wallet connection flow, providing the optimal user experience for Base Account users.
+This configuration ensures that Base Account appears first in the account authentification flow, providing the optimal user experience for Base Account users.
 
 ## 🔐 Authentication Section
 
@@ -40,8 +40,8 @@ The authentication component implements the "Sign in with Base" flow using Base 
 - **Passwordless Authentication** - No passwords required, uses wallet signatures
 - **SIWE Standard** - Follows the "Sign in with Ethereum" (EIP-4361) standard
 - **Nonce Generation** - Secure random nonce generation for each authentication
-- **Chain Switching** - Automatically switches to Base Mainnet
-- **Custom Button** - Branded "Sign in with Base" button following Base guidelines
+- **Custom Button** - Branded "Sign in with Base" imported from Base Account SDK
+- **Backend Verification** - Anti-replay and backend verification using Viem's `verifyMessage`
 
 ### Implementation:
 - Uses `wallet_connect` RPC method with `signInWithEthereum` capabilities
@@ -69,6 +69,32 @@ Sub Accounts allow you to create app-specific wallet accounts that provide a fri
 - Displays sub account details including addresses and public keys
 
 **Learn more:** [Base Account Sub Accounts Guide](https://docs.base.org/base-account/improve-ux/sub-accounts)
+
+## 💸 Spend Permissions Section
+
+Spend Permissions enable trusted spenders to move assets from your Base Account without requiring additional signatures for each transaction:
+
+### Key Features:
+- **Create Spend Permissions** - Grant spending daily/weekly/monthly allowances to trusted addresses
+- **Load Existing Permissions** - View and manage current spend permissions
+- **Use Permissions** - Execute transactions using granted permissions
+- **Permission Status Checking** - Monitor active permissions and remaining allowances
+- **Secure Allowance Management** - Set specific token amounts and time periods
+
+### Implementation:
+- Uses `requestSpendPermission` to create new spending allowances
+- Uses `fetchPermissions` to retrieve existing permissions for an account
+- Uses `prepareSpendCallData` to prepare transactions using permissions
+- Uses `getPermissionStatus` to check permission validity and remaining balances
+- Supports USDC token permissions with configurable allowances and periods
+
+### Configuration:
+- **Default Token:** USDC on Base (0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913)
+- **Default Spender:** Configurable trusted address
+- **Default Allowance:** 1 USDC per day (customizable)
+- **Network:** Base Mainnet (Chain ID: 8453)
+
+**Learn more:** [Base Account Spend Permissions Guide](https://docs.base.org/base-account/guides/use-spend-permissions)
 
 ## 🔧 Additional Sections
 
@@ -136,20 +162,30 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 ```
 src/
 ├── app/
+│   ├── api/
+│   │   └── auth/
+│   │       ├── nonce/
+│   │       │   └── route.ts     # Generate authentication nonces
+│   │       └── verify/
+│   │           └── route.ts     # Verify SIWE signatures
 │   ├── page.tsx                 # Main application page
-│   └── layout.tsx              # Root layout
+│   ├── layout.tsx              # Root layout
+│   └── globals.css             # Global styles and button classes
 ├── components/
 │   ├── sections/
-│   │   ├── authentication.tsx   # Base Account authentication
+│   │   ├── authentication.tsx   # Base Account authentication & SIWE
 │   │   ├── sub-accounts.tsx    # Sub accounts management
+│   │   ├── spend-permissions.tsx # Spend permissions management
 │   │   ├── wallet-actions.tsx  # Wallet operations
 │   │   ├── link-accounts.tsx   # Account linking
 │   │   ├── unlink-accounts.tsx # Account unlinking
 │   │   ├── mfa.tsx            # Multi-factor auth
-│   │   └── user-object.tsx    # User information
+│   │   └── user-object.tsx    # User information display
 │   ├── reusables/
 │   │   └── section.tsx        # Reusable section component
-│   └── ui/                    # UI components
+│   └── ui/                    # UI components (toasts, loaders, etc.)
+├── lib/
+│   └── nonce-store.ts         # In-memory nonce management
 ├── providers/
 │   └── providers.tsx          # Privy provider configuration
 ```
