@@ -7,7 +7,7 @@ import {
   prepareSpendCallData,
   fetchPermissions,
   getPermissionStatus,
-} from "@base-org/account/spend-permission/browser";
+} from "@base-org/account/spend-permission";
 import { base } from "@privy-io/chains";
 import Section from "../reusables/section";
 import { showSuccessToast, showErrorToast } from "@/components/ui/custom-toast";

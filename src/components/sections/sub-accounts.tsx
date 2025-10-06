@@ -31,7 +31,7 @@ const SubAccounts = () => {
     setIsLoading(true);
     try {
       // Switch to Base Sepolia (or Base Mainnet - use 8453 for mainnet)
-      await baseAccount.switchChain(84532);
+      await baseAccount.switchChain(8453);
       const provider = await baseAccount.getEthereumProvider();
 
       // Get existing sub accounts
@@ -71,7 +71,7 @@ const SubAccounts = () => {
     setIsLoading(true);
     try {
       // Switch to Base Sepolia (or Base Mainnet - use 8453 for mainnet)
-      await baseAccount.switchChain(84532);
+      await baseAccount.switchChain(8453);
       const provider = await baseAccount.getEthereumProvider();
 
       // Create new sub account
@@ -135,7 +135,7 @@ const SubAccounts = () => {
           </p>
           {baseAccount && (
             <p className="text-xs text-gray-500 mb-4">
-              Network: Base Sepolia (Chain ID: 84532)
+              Network: Base (Chain ID: 8453)
             </p>
           )}
         </div>

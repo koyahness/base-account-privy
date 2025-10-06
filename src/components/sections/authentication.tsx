@@ -30,12 +30,6 @@ const Authentication = () => {
       }
       const { nonce } = await nonceResponse.json();
 
-      // Switch to Base Chain
-      await provider.request({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: "0x2105" }],
-      });
-
       // Connect and authenticate with SIWE
       const response = (await provider.request({
         method: "wallet_connect",

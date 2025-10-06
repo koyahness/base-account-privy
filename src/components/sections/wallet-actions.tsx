@@ -300,11 +300,6 @@ const WalletActions = () => {
       disabled: !isEvmWallet,
     },
     {
-      name: "Sign message (Solana)",
-      function: handleSignMessageSolana,
-      disabled: !isSolanaWallet,
-    },
-    {
       name: "Sign typed data (EVM)",
       function: handleSignTypedData,
       disabled: !isEvmWallet,
@@ -315,25 +310,10 @@ const WalletActions = () => {
       disabled: !isEvmWallet,
     },
     {
-      name: "Sign transaction (EVM)",
-      function: handleSignTransactionEvm,
-      disabled: !isEvmWallet,
-    },
-    {
-      name: "Sign transaction (Solana)",
-      function: handleSignTransactionSolana,
-      disabled: !isSolanaWallet,
-    },
-    {
       name: "Send transaction (EVM)",
       function: handleSendTransactionEvm,
       disabled: !isEvmWallet,
-    },
-    {
-      name: "Send transaction (Solana)",
-      function: handleSendTransactionSolana,
-      disabled: !isSolanaWallet,
-    },
+    }
   ];
 
   return (
