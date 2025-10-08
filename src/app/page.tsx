@@ -12,7 +12,6 @@ import LinkAccounts from "@/components/sections/link-accounts";
 import UnlinkAccounts from "@/components/sections/unlink-accounts";
 import WalletActions from "@/components/sections/wallet-actions";
 import SubAccounts from "@/components/sections/sub-accounts";
-import SpendPermissions from "@/components/sections/spend-permissions";
 import Authentication from "@/components/sections/authentication";
 import MFA from "@/components/sections/mfa";
 
@@ -35,7 +34,6 @@ function Home() {
             <div>
               <Authentication />
               <SubAccounts />
-              <SpendPermissions />
               <WalletActions />
               <LinkAccounts />
               <UnlinkAccounts />
