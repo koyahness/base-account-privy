@@ -73,21 +73,15 @@ const SubAccounts = () => {
       // Switch to Base Sepolia (or Base Mainnet - use 8453 for mainnet)
       await baseAccount.switchChain(8453);
       const provider = await baseAccount.getEthereumProvider();
+      console.log(baseAccount.address);
 
       // Create new sub account
       await provider.request({
         method: 'wallet_addSubAccount',
         params: [
           {
-            version: '1',
             account: {
               type: 'create',
-              keys: [
-                {
-                  type: 'address',
-                  publicKey: baseAccount.address as Hex
-                }
-              ]
             }
           }
         ]
