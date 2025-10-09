@@ -9,8 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@base-org/account": "^2.3.1",
-    "@base-org/account-ui": "^1.0.1",
+    "@base-org/account-ui": "latest",
+    "@base-org/account": "latest",
     "@heroicons/react": "^2.2.0",
     "@privy-io/chains": "^0.0.2",
     "@privy-io/react-auth": "^2.25.0",
@@ -38,9 +38,7 @@
     "typescript": "^5"
   },
   "packageManager": "npm@10.9.0",
-  "npm": {
-    "overrides": {
-      "@base-org/account": "latest"
-    }
+  "overrides": {
+    "@base-org/account": "latest"
   }
 }
