@@ -6,11 +6,11 @@ A Next.js starter template for building on Base with Privy's authentication and 
 
 This demo showcases the full spectrum of Base Account capabilities:
 
-- **Base Account Authentication** - Using [`wallet_connect`](https://docs.base.org/base-account/reference/core/provider-rpc-methods/wallet_connect) with SignInWithEthereum to authenticate
-- **Sub Accounts Management** - Create and manage app-specific wallet accounts to allow your give your users a pop-up-less experience
-- **Wallet Operations** - Complete wallet interaction functionality including transactions and message signing
-- **Account Linking/Unlinking** - Connect and disconnect various account types (Google, Email etc)
-- **Multi-Factor Authentication** - Enhanced security features
+- **Base Account Authentication** - Using [`wallet_connect`](https://docs.base.org/base-account/reference/core/provider-rpc-methods/wallet_connect) with SignInWithEthereum to authenticate.
+- **Sub Accounts Management** - Create and manage app-specific wallet accounts to allow your give your users a pop-up-less experience.
+- **Wallet Operations** - Complete wallet interaction functionality including transactions and message signing.
+- **Account Linking/Unlinking** - Connect and disconnect various account types (Google, Email etc).
+- **Multi-Factor Authentication** - Enhanced security features.
 
 ## 🏗️ Architecture
 
